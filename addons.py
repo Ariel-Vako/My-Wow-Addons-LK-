@@ -3,7 +3,6 @@ import pandas as pd
 import os.path
 import easygui
 import time
-import revisar as rv
 
 print('\n')
 print('Ubique la dirección de archivo WoW.exe \n')
@@ -14,15 +13,10 @@ addons_path = os.path.dirname(wow) + '/Interface/AddOns'
 if os.path.isfile(wow) and os.path.isdir(addons_path):
     print('Comenzando descarga con Requests...\n')
     df_addons = pd.read_csv('Addons.csv')
+    filepath = addons_path + '/'
     for url in df_addons['Url']:
-        # Get the header first
         r = requests.get(url, allow_redirects=True)
-        filename = rv.get_filename_from_cd(r.headers.get('content-disposition'))
-        if rv.is_downloadable(url):
-            h = requests.head(url, allow_redirects=True)
-            header = h.headers
-            filepath = addons_path + '/'
-            filename = df_addons['Nombre'] + df_addons['Versión'] + header.get('Content-Encoding')
-
-            with open(filepath + filename, 'wb') as f:
-                f.write(r.content)
+        filename = filename = r.url.split('/')[-1]
+        pwd_addon = filepath + filename
+        with open(pwd_addon, 'wb') as f:
+            f.write(r.content)
